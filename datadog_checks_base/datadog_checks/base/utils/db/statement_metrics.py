@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Tuple
 logger = logging.getLogger(__name__)
 
 
-# Complex Tyoes
+# Complex Types
 Row = Dict[str, Any]
 RowKey = Tuple[Any]
 RowKeyFunction = Callable[[Row], RowKey]
