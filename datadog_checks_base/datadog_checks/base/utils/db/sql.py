@@ -4,7 +4,7 @@
 # Licensed under a 3-clause BSD style license (see LICENSE)
 from __future__ import unicode_literals
 
-from typing import Optional
+from typing import Optional, Union
 
 import mmh3
 
@@ -23,11 +23,11 @@ def compute_sql_signature(normalized_query):
         return None
     # Note: please be cautious when changing this function as some features rely on this
     # hash matching the APM resource hash generated on our backend.
-    return format(mmh3.hash64(normalized_query, signed=False)[0], 'x')
+    return format(mmh3.hash64(normalized_query, signed=False)[0], str('x'))
 
 
 def normalize_query_tag(query):
-    # type: (str) -> str
+    # type: (Union[str, unicode]) -> Union[str, unicode]
     """
     Normalize the SQL query value to be used as a tag on metrics.
 

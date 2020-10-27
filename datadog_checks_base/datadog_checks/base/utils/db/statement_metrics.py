@@ -52,12 +52,11 @@ class StatementMetrics:
         - **key** (_callable_) - function for an ID which uniquely identifies a row across runs
         """
         result = []
-        new_cache = {}
+        new_cache = {}  # type: Dict[RowKey, Row]
         negative_result_found = False
-        metrics = set(metrics)
 
         if len(rows) > 0:
-            dropped_metrics = metrics - set(rows[0].keys())
+            dropped_metrics = set(metrics) - set(rows[0].keys())
             if dropped_metrics:
                 logger.warning(
                     'Some statement metrics are not available from the table: %s', ','.join(m for m in dropped_metrics)
@@ -86,7 +85,7 @@ class StatementMetrics:
             if prev is None:
                 continue
 
-            metric_columns = metrics & set(row.keys())
+            metric_columns = set(metrics) & set(row.keys())
 
             # Take the diff of all metric values between the current row and the previous run's row.
             # There are a couple of edge cases to be aware of:
