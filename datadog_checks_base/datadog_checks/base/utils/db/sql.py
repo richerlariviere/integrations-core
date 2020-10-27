@@ -3,6 +3,7 @@
 # All rights reserved
 # Licensed under a 3-clause BSD style license (see LICENSE)
 from __future__ import unicode_literals
+
 from typing import Optional
 
 import mmh3
