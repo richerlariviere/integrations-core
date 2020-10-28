@@ -18,6 +18,7 @@ PORT = 12181
 HERE = os.path.dirname(os.path.abspath(__file__))
 URL = "http://{}:{}".format(HOST, PORT)
 
+
 VALID_CONFIG = {'host': HOST, 'port': PORT, 'expected_mode': "standalone", 'tags': ["mytag"]}
 
 STATUS_TYPES = ['leader', 'follower', 'observer', 'standalone', 'down', 'inactive', 'unknown']
@@ -39,7 +40,6 @@ def get_instance():
 @pytest.fixture(scope="session")
 def get_ssl_instance():
     return VALID_SSL_CONFIG
-
 
 
 @pytest.fixture
@@ -68,7 +68,6 @@ def get_ssl():
 def dd_environment(get_instance):
     def condition():
         sys.stderr.write("Waiting for ZK to boot...\n")
-
         booted = False
         dummy_instance = {'host': HOST, 'port': PORT, 'timeout': 500, 'ssl': get_ssl(),
                           'private_key': '/Users/andrew.zhang/integrations-core/zk/tests/compose/private_key.pem',
@@ -76,19 +75,19 @@ def dd_environment(get_instance):
                           'cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/cert.pem',
                           'password': 'testpass'
                           }
-        # for _ in range(10):
-        #     try:
-        #         out = ZookeeperCheck('zk', {}, [dummy_instance])._send_command('ruok')
-        #         out.seek(0)
-        #         if out.readline() != 'imok':
-        #             raise ZKConnectionFailure()
-        #         booted = True
-        #         break
-        #     except ZKConnectionFailure:
-        #         time.sleep(1)
-        #
-        # if not booted:
-        #     raise RetryError("Zookeeper failed to boot!")
+        for _ in range(10):
+            try:
+                out = ZookeeperCheck('zk', {}, [dummy_instance])._send_command('ruok')
+                out.seek(0)
+                if out.readline() != 'imok':
+                    raise ZKConnectionFailure()
+                booted = True
+                break
+            except ZKConnectionFailure:
+                time.sleep(1)
+
+        if not booted:
+            raise RetryError("Zookeeper failed to boot!")
         sys.stderr.write("ZK boot complete.\n")
 
     compose_file = os.path.join(HERE, 'compose', 'zk.yaml')
