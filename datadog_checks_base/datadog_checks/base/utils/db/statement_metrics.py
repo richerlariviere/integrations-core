@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 # Complex Types
 Row = Dict[str, Any]
-RowKey = Tuple[Any]
+RowKey = tuple
 RowKeyFunction = Callable[[Row], RowKey]
 MetricLimits = Dict[str, Tuple[int, int]]
 

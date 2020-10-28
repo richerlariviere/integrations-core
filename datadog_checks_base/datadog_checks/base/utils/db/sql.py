@@ -4,7 +4,7 @@
 # Licensed under a 3-clause BSD style license (see LICENSE)
 from __future__ import unicode_literals
 
-from typing import Optional, Union
+from typing import Optional
 
 import mmh3
 
@@ -27,7 +27,7 @@ def compute_sql_signature(normalized_query):
 
 
 def normalize_query_tag(query):
-    # type: (Union[str, unicode]) -> Union[str, unicode]
+    # type: (str) -> str
     """
     Normalize the SQL query value to be used as a tag on metrics.
 
@@ -42,5 +42,7 @@ def normalize_query_tag(query):
     For Datadog employees, more background on "Arbitrary Tag Values":
     https://docs.google.com/document/d/1LQWw6ZiQZW18lknsBAZFMrba8BQ5yOmaWoEC7J1nLxU
     """
-    query = query.replace(', ', '{} '.format(ARABIC_DECIMAL_SEPARATOR)).replace(',', ARABIC_DECIMAL_SEPARATOR)
+    query = query.replace(', ', '{} '.format(ARABIC_DECIMAL_SEPARATOR)).replace(  # type: ignore
+        ',', ARABIC_DECIMAL_SEPARATOR
+    )
     return query
