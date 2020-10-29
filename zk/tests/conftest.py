@@ -36,13 +36,18 @@ VALID_SSL_CONFIG = {
 
 STATUS_TYPES = ['leader', 'follower', 'observer', 'standalone', 'down', 'inactive', 'unknown']
 
-VALID_SSL_CONFIG = {'host': HOST, 'port': PORT, 'expected_mode': "standalone", 'tags': ["mytag"],
-                    'timeout': 500, 'ssl': True,
-                    'private_key': '/Users/andrew.zhang/integrations-core/zk/tests/compose/private_key.pem',
-                    'ca_cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/ca_cert.pem',
-                    'cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/cert.pem',
-                    'password': 'testpass'
-                    }
+VALID_SSL_CONFIG = {
+    'host': HOST,
+    'port': PORT,
+    'expected_mode': "standalone",
+    'tags': ["mytag"],
+    'timeout': 500,
+    'ssl': True,
+    'private_key': '/Users/andrew.zhang/integrations-core/zk/tests/compose/private_key.pem',
+    'ca_cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/ca_cert.pem',
+    'cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/cert.pem',
+    'password': 'testpass',
+}
 
 
 @pytest.fixture(scope="session")
