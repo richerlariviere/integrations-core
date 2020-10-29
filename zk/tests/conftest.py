@@ -21,25 +21,27 @@ URL = "http://{}:{}".format(HOST, PORT)
 
 VALID_CONFIG = {'host': HOST, 'port': PORT, 'expected_mode': "standalone", 'tags': ["mytag"]}
 
-STATUS_TYPES = ['leader', 'follower', 'observer', 'standalone', 'down', 'inactive', 'unknown']
+VALID_SSL_CONFIG = {
+    'host': HOST,
+    'port': PORT,
+    'expected_mode': "standalone",
+    'tags': ["mytag"],
+    'timeout': 500,
+    'ssl': True,
+    'private_key': '/conf/private_key.pem',
+    'ca_cert': '/conf/ca_cert.pem',
+    'cert': '/conf/cert.pem',
+    'password': 'testpass',
+}
 
-VALID_SSL_CONFIG = {'host': HOST, 'port': PORT, 'expected_mode': "standalone", 'tags': ["mytag"],
-                    'timeout': 500, 'ssl': True,
-                    'private_key': '/Users/andrew.zhang/integrations-core/zk/tests/compose/private_key.pem',
-                    'ca_cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/ca_cert.pem',
-                    'cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/cert.pem',
-                    'password': 'testpass'
-                    }
+STATUS_TYPES = ['leader', 'follower', 'observer', 'standalone', 'down', 'inactive', 'unknown']
 
 
 @pytest.fixture(scope="session")
 def get_instance():
+    if get_ssl():
+        return VALID_SSL_CONFIG
     return VALID_CONFIG
-
-
-@pytest.fixture(scope="session")
-def get_ssl_instance():
-    return VALID_SSL_CONFIG
 
 
 @pytest.fixture
@@ -69,12 +71,16 @@ def dd_environment(get_instance):
     def condition():
         sys.stderr.write("Waiting for ZK to boot...\n")
         booted = False
-        dummy_instance = {'host': HOST, 'port': PORT, 'timeout': 500, 'ssl': get_ssl(),
-                          'private_key': '/Users/andrew.zhang/integrations-core/zk/tests/compose/private_key.pem',
-                          'ca_cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/ca_cert.pem',
-                          'cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/cert.pem',
-                          'password': 'testpass'
-                          }
+        dummy_instance = {
+            'host': HOST,
+            'port': PORT,
+            'timeout': 500,
+            'ssl': get_ssl(),
+            'private_key': os.path.join(HERE, 'compose', 'private_key.pem'),
+            'ca_cert': os.path.join(HERE, 'compose', 'ca_cert.pem'),
+            'cert': os.path.join(HERE, 'compose', 'cert.pem'),
+            'password': 'testpass',
+        }
         for _ in range(10):
             try:
                 out = ZookeeperCheck('zk', {}, [dummy_instance])._send_command('ruok')
@@ -104,6 +110,11 @@ def dd_environment(get_instance):
     ca_cert = os.path.join(HERE, 'compose', 'ca_cert.pem')
 
     with docker_run(compose_file, conditions=[condition]):
-        yield get_instance, {'docker_volumes': ['{}:/conf/private_key.pem'.format(private_key),
-                                                '{}:/conf/cert.pem'.format(cert),
-                                                '{}:/conf/ca_cert.pem'.format(ca_cert)]}
+        yield get_instance, {
+            'docker_volumes': [
+                '{}:/conf/private_key.pem'.format(private_key),
+                '{}:/conf/cert.pem'.format(cert),
+                '{}:/conf/ca_cert.pem'.format(ca_cert),
+            ]
+        }
+
