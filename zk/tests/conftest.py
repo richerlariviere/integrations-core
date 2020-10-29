@@ -36,12 +36,25 @@ VALID_SSL_CONFIG = {
 
 STATUS_TYPES = ['leader', 'follower', 'observer', 'standalone', 'down', 'inactive', 'unknown']
 
+VALID_SSL_CONFIG = {'host': HOST, 'port': PORT, 'expected_mode': "standalone", 'tags': ["mytag"],
+                    'timeout': 500, 'ssl': True,
+                    'private_key': '/Users/andrew.zhang/integrations-core/zk/tests/compose/private_key.pem',
+                    'ca_cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/ca_cert.pem',
+                    'cert': '/Users/andrew.zhang/integrations-core/zk/tests/compose/cert.pem',
+                    'password': 'testpass'
+                    }
+
 
 @pytest.fixture(scope="session")
 def get_instance():
     if get_ssl():
         return VALID_SSL_CONFIG
     return VALID_CONFIG
+
+
+@pytest.fixture(scope="session")
+def get_ssl_instance():
+    return VALID_SSL_CONFIG
 
 
 @pytest.fixture
@@ -117,4 +130,3 @@ def dd_environment(get_instance):
                 '{}:/conf/ca_cert.pem'.format(ca_cert),
             ]
         }
-
