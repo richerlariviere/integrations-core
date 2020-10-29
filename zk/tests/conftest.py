@@ -89,6 +89,7 @@ def dd_environment(get_instance):
     def condition():
         sys.stderr.write("Waiting for ZK to boot...\n")
         booted = False
+        # TODO: This doesn't work for SSL yet
         dummy_instance = {
             'host': HOST,
             'port': PORT,
