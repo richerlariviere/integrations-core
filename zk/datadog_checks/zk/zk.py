@@ -56,6 +56,7 @@ zk_max_file_descriptor_count    4096
 ```
 
 """
+import os
 import re
 import socket
 import ssl
@@ -92,6 +93,9 @@ class ZKMetric(tuple):
         return super(ZKMetric, cls).__new__(cls, [name, value, m_type, m_tags])
 
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+
 class ZookeeperCheck(AgentCheck):
     """
     ZooKeeper AgentCheck.
@@ -122,9 +126,9 @@ class ZookeeperCheck(AgentCheck):
         self.sc_tags = ["host:{0}".format(self.host), "port:{0}".format(self.port)] + self.base_tags
         self.should_report_instance_mode = is_affirmative(self.instance.get("report_instance_mode", True))
         self.ssl = bool(self.instance.get('ssl', False))
-        self.private_key = self.instance.get('private_key', '/conf/private_key.pem')
-        self.ca_cert = self.instance.get('ca_cert', '/conf/ca_cert.pem')
-        self.cert = self.instance.get('cert', '/conf/cert.pem')
+        self.private_key = self.instance.get('private_key', os.path.join(HERE, 'compose', 'private_key.pem'))
+        self.ca_cert = self.instance.get('ca_cert', os.path.join(HERE, 'compose', 'ca_cert.pem'))
+        self.cert = self.instance.get('cert', os.path.join(HERE, 'compose', 'cert.pem'))
         self.password = self.instance.get('password', 'testpass')
 
     def check(self, _):
@@ -240,8 +244,7 @@ class ZookeeperCheck(AgentCheck):
         while chunk:
             if num_reads > max_reads:
                 # Safeguard against an infinite loop
-                raise Exception(
-                    "Read %s bytes before exceeding max reads of %s. " % (buf.tell(), max_reads))
+                raise Exception("Read %s bytes before exceeding max reads of %s. " % (buf.tell(), max_reads))
             chunk = ensure_unicode(sock.recv(chunk_size))
             buf.write(chunk)
             num_reads += 1
